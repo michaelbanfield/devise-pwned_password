@@ -23,7 +23,7 @@ module Devise
 
         sha1Hash = Digest::SHA1.hexdigest password
 
-        userAgent = "#{Rails.application.class.parent_name}-devise_pwned_password"
+        userAgent = "devise_pwned_password"
 
         uri = URI.parse("https://haveibeenpwned.com/api/v2/pwnedpassword/#{sha1Hash}")
 
