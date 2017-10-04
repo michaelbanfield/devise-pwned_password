@@ -10,8 +10,8 @@ Gem::Specification.new do |s|
   s.authors     = ["Michael Banfield"]
   s.email       = ["michael@michaelbanfield.com"]
   s.homepage    = "https://github.com/michaelbanfield/devise-pwned_password"
-  s.summary     = "Summary of Devise::PwnedPassword."
-  s.description = "Description of Devise::PwnedPassword."
+  s.summary     = "Devise extension that checks user passwords against the PwnedPasswords dataset."
+  s.description = "Devise extension that checks user passwords against the PwnedPasswords dataset https://haveibeenpwned.com/Passwords."
   s.license     = "MIT"
 
   s.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.md"]
