@@ -44,7 +44,7 @@ module Devise
         Net::HTTP.start(uri.host, uri.port, :use_ssl => true) do |http|
           request = Net::HTTP::Get.new(uri.request_uri, {'User-Agent' => userAgent})
           response = http.request request
-          return usage_count(response.read_body, suffix) > self.class.min_password_matches
+          return usage_count(response.read_body, suffix) >= self.class.min_password_matches
         end
 
         return false
