@@ -8,6 +8,8 @@ AllCops:
   DisabledByDefault: true
   Exclude:
     - 'test/dummy/**/*'
+    - 'vendor/**/*'
+    - '.git/**/*'
 
 # Prefer &&/|| over and/or.
 Style/AndOr:
