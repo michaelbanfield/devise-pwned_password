@@ -14,36 +14,37 @@ module Devise
         validate :not_pwned_password
       end
 
+      module ClassMethods
+        Devise::Models.config(self, :min_password_matches)
+      end
+
       private
 
+      def usage_count(response, suffix)
+        count = 0
+        response.each_line do |line|
+          if line.start_with? suffix
+            count = line.strip.split(':').last.to_i
+            break
+          end
+        end
+        count
+      end
 
       # Returns true if password is present in the PwnedPasswords dataset
       # Implement retry behaviour described here https://haveibeenpwned.com/API/v2#RateLimiting
       def is_password_pwned(password)
-
-        sha1Hash = Digest::SHA1.hexdigest password
+        hash = Digest::SHA1.hexdigest(password).upcase
+        prefix, suffix = hash.slice!(0..4), hash
 
         userAgent = "devise_pwned_password"
 
-        uri = URI.parse("https://haveibeenpwned.com/api/v2/pwnedpassword/#{sha1Hash}")
+        uri = URI.parse("https://api.pwnedpasswords.com/range/#{prefix}")
 
         Net::HTTP.start(uri.host, uri.port, :use_ssl => true) do |http|
           request = Net::HTTP::Get.new(uri.request_uri, {'User-Agent' => userAgent})
-          3.times {
-            response = http.request request
-            if response.code != '429'
-              return response.code == '200'
-            end
-
-            retryAfter = response.get_fields('Retry-After')[0].to_i
-
-            if retryAfter > 10
-              #Exit early if the throttling is too high
-              return false
-            end
-
-            sleep retryAfter
-          } 
+          response = http.request request
+          return usage_count(response.read_body, suffix) >= self.class.min_password_matches
         end
 
         return false

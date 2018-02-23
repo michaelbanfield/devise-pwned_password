@@ -16,11 +16,22 @@ class AdminUser < ApplicationRecord
 end
 ```
 
-
-Users will receive the following error message if they use a password from the PwnedPasswords dataset
+Users will receive the following error message if they use a password from the
+PwnedPasswords dataset:
 
 ```
 This password has previously appeared in a data breach and should never be used. Please choose something harder to guess.
+```
+
+By default passwords are rejected if they appear at all in the data set.
+Optionally, you can add the following snippet to `config/initializers/devise.rb`
+if you want the error message to be displayed only when the password is present
+a certain number of times in the data set:
+
+```ruby
+# Minimum number of times a pwned password must exist in the data set in order
+# to be reject.
+config.min_password_matches = 10
 ```
 
 ## Installation
@@ -38,10 +49,18 @@ $ bundle install
 
 ## Considerations
 
-A few things to consider/understand when using this gem
+A few things to consider/understand when using this gem:
 
-* User passwords are sent as a SHA1 hash to the API described here https://haveibeenpwned.com/API/v2#PwnedPasswords , this does mean that the owner of that API could be recording these hash's, and potentially cracking them. For most applications this is pretty low risk as there is no link to the user's account. If this is an unacceptable risk for your application you will be better off downloading the raw dataset and hosting it yourself.
-* This puts an external API in the request path of users signing up to your application. This could potentially add some latency to this operation, especially as the haveibeenpwned API throttles fairly aggressively. If your application does get throttled this plugin will retry for a maximum of 30 seconds and then fail silently, so at worst users wait a bit longer when signing up.
+* User passwords are hashed using SHA-1 and then truncated to 5 characters,
+  implementing the k-Anonymity model described in
+  https://haveibeenpwned.com/API/v2#SearchingPwnedPasswordsByRange
+  Neither the clear-text password nor the full password hash is ever transmitted
+  to a third party. More implementation details and important caveats can be
+  found in https://blog.cloudflare.com/validating-leaked-passwords-with-k-anonymity/
+
+* This puts an external API in the request path of users signing up to your
+  application. This could potentially add some latency to this operation. The
+  gem is designed to fail silently if the PwnedPasswords service is unavailable.
 
 ## Contributing
 
