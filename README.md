@@ -23,6 +23,7 @@ PwnedPasswords dataset:
 This password has previously appeared in a data breach and should never be used. Please choose something harder to guess.
 ```
 
+By default passwords are rejected if they appear at all in the data set.
 Optionally, you can add the following snippet to `config/initializers/devise.rb`
 if you want the error message to be displayed only when the password is present
 a certain number of times in the data set:
