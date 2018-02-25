@@ -1,5 +1,7 @@
-require 'devise'
-require 'devise/pwned_password/model'
+# frozen_string_literal: true
+
+require "devise"
+require "devise/pwned_password/model"
 
 module Devise
   mattr_accessor :min_password_matches
