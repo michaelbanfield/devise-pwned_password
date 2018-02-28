@@ -34,6 +34,16 @@ a certain number of times in the data set:
 config.min_password_matches = 10
 ```
 
+By default responses from the PwnedPasswords API are timed out after 5 seconds
+to reduce potential latency problems.
+Optionally, you can add the following snippet to `config/initializers/devise.rb`
+to control the timeout settings:
+
+```ruby
+config.pwned_password_open_timeout = 1
+config.pwned_password_read_timeout = 2
+```
+
 ## Installation
 Add this line to your application's Gemfile:
 

@@ -18,6 +18,8 @@ module Devise
 
       module ClassMethods
         Devise::Models.config(self, :min_password_matches)
+        Devise::Models.config(self, :pwned_password_open_timeout)
+        Devise::Models.config(self, :pwned_password_read_timeout)
       end
 
       private
@@ -43,10 +45,15 @@ module Devise
 
           uri = URI.parse("https://api.pwnedpasswords.com/range/#{prefix}")
 
-          Net::HTTP.start(uri.host, uri.port, use_ssl: true) do |http|
-            request = Net::HTTP::Get.new(uri.request_uri, "User-Agent" => userAgent)
-            response = http.request request
-            return usage_count(response.read_body, suffix) >= self.class.min_password_matches
+          begin
+            Net::HTTP.start(uri.host, uri.port, use_ssl: true, open_timeout: self.class.pwned_password_open_timeout, read_timeout: self.class.pwned_password_read_timeout) do |http|
+              request = Net::HTTP::Get.new(uri.request_uri, "User-Agent" => userAgent)
+              response = http.request request
+              return false unless response.is_a?(Net::HTTPSuccess)
+              return usage_count(response.read_body, suffix) >= self.class.min_password_matches
+            end
+          rescue StandardError
+            return false
           end
 
           false
