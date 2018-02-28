@@ -20,7 +20,17 @@ Users will receive the following error message if they use a password from the
 PwnedPasswords dataset:
 
 ```
-This password has previously appeared in a data breach and should never be used. Please choose something harder to guess.
+Password has previously appeared in a data breach and should never be used. Please choose something harder to guess.
+```
+
+You can customize this error message by modifying the `devise` YAML file.
+
+```yml
+# config/locales/devise.en.yml
+en:
+  errors:
+    messages:
+      pwned_password: "has previously appeared in a data breach and should never be used. If you've ever used it anywhere before, change it immediately!"
 ```
 
 By default passwords are rejected if they appear at all in the data set.
