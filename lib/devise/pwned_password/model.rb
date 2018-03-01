@@ -13,7 +13,7 @@ module Devise
       extend ActiveSupport::Concern
 
       included do
-        validate :not_pwned_password
+        validate :not_pwned_password, if: :password_required?
       end
 
       module ClassMethods
