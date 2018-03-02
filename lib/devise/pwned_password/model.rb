@@ -62,8 +62,7 @@ module Devise
         def not_pwned_password
           # This deliberately fails silently on 500's etc. Most apps wont want to tie the ability to sign up customers to the availability of a third party API
           if password_pwned?(password)
-            # Error message taken from https://haveibeenpwned.com/Passwords
-            errors.add(:password, "This password has previously appeared in a data breach and should never be used. Please choose something harder to guess.")
+            errors.add(:password, :pwned_password)
           end
         end
     end
