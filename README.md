@@ -33,6 +33,22 @@ en:
       pwned_password: "has previously appeared in a data breach and should never be used. If you've ever used it anywhere before, change it immediately!"
 ```
 
+You can optionally warn existing users when they sign in if they are using a password from the PwnedPasswords dataset. The default message is:
+
+```
+Your password has previously appeared in a data breach and should never be used. We strongly recommend you change your password.
+```
+
+You can customize this message by modifying the `devise` YAML file.
+
+```yml
+# config/locales/devise.en.yml
+en:
+  devise:
+    sessions:
+      warn_pwned: "Your password has previously appeared in a data breach and should never be used. We strongly recommend you change your password everywhere you have used it."
+```
+
 By default passwords are rejected if they appear at all in the data set.
 Optionally, you can add the following snippet to `config/initializers/devise.rb`
 if you want the error message to be displayed only when the password is present
@@ -66,6 +82,13 @@ And then execute:
 $ bundle install
 ```
 
+To warn on sign in, override `after_sign_in_path_for`
+```ruby
+def after_sign_in_path_for(resource)
+  set_flash_message! :alert, :warn_pwned if resource.respond_to?(:pwned?) && resource.pwned?
+  super
+end
+```
 
 ## Considerations
 
