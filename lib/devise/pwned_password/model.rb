@@ -31,7 +31,7 @@ module Devise
       # Implement retry behaviour described here https://haveibeenpwned.com/API/v2#RateLimiting
       def password_pwned?(password)
         @pwned = false
-        hash = Digest::SHA1.hexdigest(password).upcase
+        hash = Digest::SHA1.hexdigest(password.to_s).upcase
         prefix, suffix = hash.slice!(0..4), hash
 
         userAgent = "devise_pwned_password"
