@@ -82,13 +82,26 @@ And then execute:
 $ bundle install
 ```
 
-To warn on sign in, override `after_sign_in_path_for`
+Optionally, if you also want to warn existing users when they sign in, override `after_sign_in_path_for`
 ```ruby
 def after_sign_in_path_for(resource)
   set_flash_message! :alert, :warn_pwned if resource.respond_to?(:pwned?) && resource.pwned?
   super
 end
 ```
+
+This should generally be added in ```app/controllers/application_controller.rb``` for a rails app. For an Active Admin application the following monkey patch is needed.
+
+```ruby
+# config/initializers/active_admin_devise_sessions_controller.rb
+class ActiveAdmin::Devise::SessionsController
+  def after_sign_in_path_for(resource)
+      set_flash_message! :alert, :warn_pwned if resource.respond_to?(:pwned?) && resource.pwned?
+      super
+  end
+end
+```
+
 
 ## Considerations
 
@@ -113,7 +126,7 @@ To contribute
 * Fork the repository
 * Make your changes
 * Run bin/test to make sure the unit tests still run
-* Send a pull requests
+* Send a pull request
 
 ## License
 The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
