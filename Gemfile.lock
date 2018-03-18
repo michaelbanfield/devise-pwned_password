@@ -3,6 +3,7 @@ PATH
   specs:
     devise-pwned_password (0.1.4)
       devise (~> 4)
+      pwned (~> 1.2.1)
       rails (~> 5.1.2)
 
 GEM
@@ -70,7 +71,7 @@ GEM
     mini_mime (1.0.0)
     mini_portile2 (2.3.0)
     minitest (5.10.3)
-    nio4r (2.2.0)
+    nio4r (2.3.0)
     nokogiri (1.8.1)
       mini_portile2 (~> 2.3.0)
     orm_adapter (0.5.0)
@@ -78,6 +79,7 @@ GEM
     parser (2.5.0.1)
       ast (~> 2.4.0)
     powerpack (0.1.1)
+    pwned (1.2.1)
     rack (2.0.3)
     rack-test (0.7.0)
       rack (>= 1.0, < 3)

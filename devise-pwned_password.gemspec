@@ -20,6 +20,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency "rails", "~> 5.1.2"
   s.add_dependency "devise", "~> 4"
+  s.add_dependency "pwned", "~> 1.2.1"
 
   s.add_development_dependency "sqlite3"
   s.add_development_dependency "rubocop", "~> 0.52.1"
