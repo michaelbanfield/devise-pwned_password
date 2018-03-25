@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "net/http"
+require "pwned"
 require "devise/pwned_password/hooks/pwned_password"
 
 module Devise
@@ -31,22 +31,16 @@ module Devise
       # Implement retry behaviour described here https://haveibeenpwned.com/API/v2#RateLimiting
       def password_pwned?(password)
         @pwned = false
-        hash = Digest::SHA1.hexdigest(password.to_s).upcase
-        prefix, suffix = hash.slice!(0..4), hash
-
-        userAgent = "devise_pwned_password"
-
-        uri = URI.parse("https://api.pwnedpasswords.com/range/#{prefix}")
-
+        options = {
+          "User-Agent" => "devise_pwned_password",
+          read_timeout: self.class.pwned_password_read_timeout,
+          open_timeout: self.class.pwned_password_open_timeout
+        }
+        pwned_password = Pwned::Password.new(password.to_s, options)
         begin
-          Net::HTTP.start(uri.host, uri.port, use_ssl: true, open_timeout: self.class.pwned_password_open_timeout, read_timeout: self.class.pwned_password_read_timeout) do |http|
-            request = Net::HTTP::Get.new(uri.request_uri, "User-Agent" => userAgent)
-            response = http.request request
-            return false unless response.is_a?(Net::HTTPSuccess)
-            @pwned = usage_count(response.read_body, suffix) >= self.class.min_password_matches
-            return @pwned
-          end
-        rescue StandardError
+          @pwned = pwned_password.pwned_count >= self.class.min_password_matches
+          return @pwned
+        rescue Pwned::Error
           return false
         end
 
@@ -54,17 +48,6 @@ module Devise
       end
 
       private
-
-        def usage_count(response, suffix)
-          count = 0
-          response.each_line do |line|
-            if line.start_with? suffix
-              count = line.strip.split(":").last.to_i
-              break
-            end
-          end
-          count
-        end
 
         def not_pwned_password
           # This deliberately fails silently on 500's etc. Most apps wont want to tie the ability to sign up customers to the availability of a third party API
