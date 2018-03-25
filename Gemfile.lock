@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    devise-pwned_password (0.1.4)
+    devise-pwned_password (0.1.5)
       devise (~> 4)
       pwned (~> 1.2.1)
 
