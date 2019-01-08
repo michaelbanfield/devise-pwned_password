@@ -19,6 +19,7 @@ module Devise
 
       module ClassMethods
         Devise::Models.config(self, :min_password_matches)
+        Devise::Models.config(self, :min_password_matches_warn)
         Devise::Models.config(self, :pwned_password_open_timeout)
         Devise::Models.config(self, :pwned_password_read_timeout)
       end
@@ -45,7 +46,7 @@ module Devise
         pwned_password = Pwned::Password.new(password.to_s, options)
         begin
           @pwned_count = pwned_password.pwned_count
-          @pwned = @pwned_count >= self.class.min_password_matches
+          @pwned = @pwned_count >= (persisted? ? self.class.min_password_matches_warn || self.class.min_password_matches : self.class.min_password_matches)
           return @pwned
         rescue Pwned::Error
           return false

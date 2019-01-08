@@ -60,6 +60,18 @@ a certain number of times in the data set:
 config.min_password_matches = 10
 ```
 
+By default the value set above is used to reject passwords and warn users.
+Optionally, you can add the following snippet to `config/initializers/devise.rb`
+if you want to use different thresholds for rejecting the password and warning
+the user (for example you may only want to reject passwords that are common but
+warn if the password occurs at all in the list):
+
+```ruby
+# Minimum number of times a pwned password must exist in the data set in order
+# to warn the user.
+config.min_password_matches_warn = 1
+```
+
 By default responses from the PwnedPasswords API are timed out after 5 seconds
 to reduce potential latency problems.
 Optionally, you can add the following snippet to `config/initializers/devise.rb`
