@@ -278,4 +278,8 @@ Devise.setup do |config|
   # Minimum number of times a pwned password must exist in the data set in order
   # to be reject.
   # config.min_password_matches = 1
+
+  # Minimum number of times a pwned password must exist in the data set in order
+  # to warn the user.
+  # config.min_password_matches_warn = 1
 end
