@@ -5,6 +5,8 @@ Based on
 
 https://github.com/HCLarsen/devise-uncommon_password
 
+Recently the HaveIBeenPwned API has moved to a authenticated/paid [model](https://www.troyhunt.com/authentication-and-the-have-i-been-pwned-api/) , this does not effect the PwnedPasswords API, no payment or authentication is required.
+
 
 ## Usage
 Add the :pwned_password module to your existing Devise model.
