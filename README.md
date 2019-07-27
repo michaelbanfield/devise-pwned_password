@@ -84,6 +84,17 @@ config.pwned_password_open_timeout = 1
 config.pwned_password_read_timeout = 2
 ```
 
+### Disabling in test environments
+
+Currently this module cannot be mocked out for test environments. Because an API call is made this can slow down tests, or make test fixtures needlessly complex (dynamically generated passwords). The module can be disabled in test environments like this.
+
+```ruby
+class User < ApplicationRecord
+  devise :invitable ...  :validatable, :lockable
+  devise :pwned_password unless Rails.env.test?
+end
+```
+
 ## Installation
 Add this line to your application's Gemfile:
 
