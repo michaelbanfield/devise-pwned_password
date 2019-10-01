@@ -38,7 +38,7 @@ module Devise
         @pwned_count = 0
 
         options = {
-          "User-Agent" => "devise_pwned_password",
+          headers: { "User-Agent" => "devise_pwned_password" },
           read_timeout: self.class.pwned_password_read_timeout,
           open_timeout: self.class.pwned_password_open_timeout
         }
