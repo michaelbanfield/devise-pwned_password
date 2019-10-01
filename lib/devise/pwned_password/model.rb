@@ -33,7 +33,6 @@ module Devise
       end
 
       # Returns true if password is present in the PwnedPasswords dataset
-      # Implement retry behaviour described here https://haveibeenpwned.com/API/v2#RateLimiting
       def password_pwned?(password)
         @pwned = false
         @pwned_count = 0
