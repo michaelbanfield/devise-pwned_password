@@ -20,6 +20,7 @@ module Devise
       module ClassMethods
         Devise::Models.config(self, :min_password_matches)
         Devise::Models.config(self, :min_password_matches_warn)
+        Devise::Models.config(self, :pwned_password_check_on_sign_in)
         Devise::Models.config(self, :pwned_password_open_timeout)
         Devise::Models.config(self, :pwned_password_read_timeout)
       end
