@@ -18,5 +18,4 @@ jobs:
         sudo apt-get install libsqlite3-dev
         gem install bundler
         bundle install --jobs 4 --retry 3
-        rails db:migrate RAILS_ENV=development
-        bundle exec rake
+        bin/test
