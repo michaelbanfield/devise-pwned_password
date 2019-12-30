@@ -8,7 +8,7 @@ module Devise
                  :pwned_password_open_timeout, :pwned_password_read_timeout
   @@min_password_matches = 1
   @@min_password_matches_warn = nil
-  @@pwned_password_check_on_sign_in = false
+  @@pwned_password_check_on_sign_in = true
   @@pwned_password_open_timeout = 5
   @@pwned_password_read_timeout = 5
 

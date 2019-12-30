@@ -107,14 +107,7 @@ And then execute:
 $ bundle install
 ```
 
-Optionally, if you also want to warn existing users when they sign in, add the following to `config/initializers/devise.rb`:
-
-```ruby
-config.pwned_password_check_on_sign_in = true
-```
-
-and override `after_sign_in_path_for`
-
+Optionally, if you also want to warn existing users when they sign in, override `after_sign_in_path_for`
 ```ruby
 def after_sign_in_path_for(resource)
   set_flash_message! :alert, :warn_pwned if resource.respond_to?(:pwned?) && resource.pwned?
@@ -134,6 +127,11 @@ class ActiveAdmin::Devise::SessionsController
 end
 ```
 
+To prevent the default call to the HaveIBeenPwned API on user sign in, add the following to `config/initializers/devise.rb`:
+
+```ruby
+config.pwned_password_check_on_sign_in = false
+```
 
 ## Considerations
 
