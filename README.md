@@ -127,6 +127,11 @@ class ActiveAdmin::Devise::SessionsController
 end
 ```
 
+To prevent the default call to the HaveIBeenPwned API on user sign in, add the following to `config/initializers/devise.rb`:
+
+```ruby
+config.pwned_password_check_on_sign_in = false
+```
 
 ## Considerations
 
