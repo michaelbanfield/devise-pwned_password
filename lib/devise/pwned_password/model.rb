@@ -44,14 +44,15 @@ module Devise
           open_timeout: self.class.pwned_password_open_timeout
         }
         pwned_password = Pwned::Password.new(password.to_s, options)
-        begin
-          @pwned_count = pwned_password.pwned_count
-          @pwned = @pwned_count >= (persisted? ? self.class.min_password_matches_warn || self.class.min_password_matches : self.class.min_password_matches)
-          return @pwned
-        rescue Pwned::Error
-          return false
-        end
 
+        threshold = (self.class.min_password_matches_warn if persisted?) ||
+          self.class.min_password_matches
+        @pwned_count = pwned_password.pwned_count
+        @pwned = @pwned_count >= threshold
+        pwned_after_password_attempt if respond_to?(:pwned_after_password_attempt)
+        @pwned
+      rescue Pwned::Error => e # NOTE PWned::TimeoutError < Pwned::Error
+        pwned_after_error(e) if respond_to?(:pwned_after_error)
         false
       end
 

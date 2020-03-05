@@ -9,6 +9,29 @@ class Devise::PwnedPassword::Test < ActiveSupport::TestCase
     assert_not user.valid?, "User with pwned password shoud not be valid."
   end
 
+  test "should be called after any password attempts" do
+    password = "password"
+    user = User.new email: "example@example.org", password: password, password_confirmation: password
+    was_called = false
+    user.singleton_class.class_eval do
+      define_method(:pwned_after_password_attempt) { was_called = true }
+    end
+    user.save
+    assert was_called
+  end
+
+  test "should be called after any pwned errors during operation" do
+    password = "password"
+    user = User.new email: "example@example.org", password: password, password_confirmation: password
+    was_called = false
+    user.singleton_class.class_eval do
+      define_method(:pwned_after_password_attempt) { raise Pwned::TimeoutError, "some timeout error" }
+      define_method(:pwned_after_error) { |e| was_called = e.is_a?(Pwned::Error) }
+    end
+    user.save
+    assert was_called
+  end
+
   test "should accept validation for a password not in the dataset" do
     # This test will be unavoidably flaky
     password = "fddkasnsdddghjt"
