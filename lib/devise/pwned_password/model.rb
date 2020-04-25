@@ -46,7 +46,13 @@ module Devise
         pwned_password = Pwned::Password.new(password.to_s, options)
         begin
           @pwned_count = pwned_password.pwned_count
-          @pwned = @pwned_count >= (persisted? ? self.class.min_password_matches_warn || self.class.min_password_matches : self.class.min_password_matches)
+          @pwned = @pwned_count >= (
+            if persisted?
+              self.class.min_password_matches_warn || self.class.min_password_matches
+            else
+                                                      self.class.min_password_matches
+            end
+          )
           return @pwned
         rescue Pwned::Error
           return false
