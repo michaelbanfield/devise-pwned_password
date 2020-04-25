@@ -14,7 +14,8 @@ module Devise
       extend ActiveSupport::Concern
 
       included do
-        validate :not_pwned_password, if: :password_required?
+        before_validation :reset_pwned
+        validate :not_pwned_password, if: :check_pwned_password?
       end
 
       module ClassMethods
@@ -23,6 +24,11 @@ module Devise
         Devise::Models.config(self, :pwned_password_check_on_sign_in)
         Devise::Models.config(self, :pwned_password_open_timeout)
         Devise::Models.config(self, :pwned_password_read_timeout)
+      end
+
+      def check_pwned_password?
+        Devise.pwned_password_check_enabled &&
+          (Devise.activerecord51? ? :will_save_change_to_encrypted_password? : :encrypted_password_changed?)
       end
 
       def pwned?
@@ -35,9 +41,7 @@ module Devise
 
       # Returns true if password is present in the PwnedPasswords dataset
       def password_pwned?(password)
-        @pwned = false
-        @pwned_count = 0
-
+        reset_pwned
         options = {
           headers: { "User-Agent" => "devise_pwned_password" },
           read_timeout: self.class.pwned_password_read_timeout,
@@ -62,6 +66,11 @@ module Devise
       end
 
       private
+
+        def reset_pwned
+          @pwned = false
+          @pwned_count = 0
+        end
 
         def not_pwned_password
           # This deliberately fails silently on 500's etc. Most apps won't want to tie the ability to sign up users to the availability of a third-party API.

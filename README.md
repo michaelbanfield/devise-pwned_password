@@ -13,7 +13,7 @@ Add the :pwned_password module to your existing Devise model.
 
 ```ruby
 class AdminUser < ApplicationRecord
-  devise :database_authenticatable, 
+  devise :database_authenticatable,
          :recoverable, :rememberable, :trackable, :validatable, :pwned_password
 end
 ```
@@ -86,14 +86,13 @@ config.pwned_password_read_timeout = 2
 
 ### Disabling in test environments
 
-Currently this module cannot be mocked out for test environments. Because an API call is made this can slow down tests, or make test fixtures needlessly complex (dynamically generated passwords). The module can be disabled in test environments like this.
+Because calling a remote API can slow down tests, and requiring non-pwned passwords can make test fixtures needlessly complex (dynamically generated passwords), you probably want to disable the `pwned_password` check in your tests. You can disable the `pwned_password` check for the test environments by adding this to your `config/initializers/devise.rb` file:
 
 ```ruby
-class User < ApplicationRecord
-  devise :invitable ...  :validatable, :lockable
-  devise :pwned_password unless Rails.env.test?
-end
+config.pwned_password_check_enabled = !Rails.env.test?
 ```
+
+If there are any tests that required the check to be enabled (such as tests for specifically testing the flow/behavior for what should happen when a user does try to use, or already have, a pwned password), you can temporarily set `Devise.pwned_password_check_enabled = true` for the duration of the test (just be sure to reset it back at the end).
 
 ## Installation
 Add this line to your application's Gemfile:
