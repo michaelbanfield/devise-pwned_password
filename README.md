@@ -13,7 +13,7 @@ Add the :pwned_password module to your existing Devise model.
 
 ```ruby
 class AdminUser < ApplicationRecord
-  devise :database_authenticatable, 
+  devise :database_authenticatable,
          :recoverable, :rememberable, :trackable, :validatable, :pwned_password
 end
 ```
@@ -25,6 +25,8 @@ PwnedPasswords dataset:
 Password has previously appeared in a data breach and should never be used. Please choose something harder to guess.
 ```
 
+## Configuration
+
 You can customize this error message by modifying the `devise` YAML file.
 
 ```yml
@@ -35,8 +37,63 @@ en:
       pwned_password: "has previously appeared in a data breach and should never be used. If you've ever used it anywhere before, change it immediately!"
 ```
 
-You can optionally warn existing users when they sign in if they are using a password from the PwnedPasswords dataset. The default message is:
+By default passwords are rejected if they appear at all in the data set.
+Optionally, you can add the following snippet to `config/initializers/devise.rb`
+if you want the error message to be displayed only when the password is present
+a certain number of times in the data set:
 
+```ruby
+# Minimum number of times a pwned password must exist in the data set in order
+# to be reject.
+config.min_password_matches = 10
+```
+
+By default responses from the PwnedPasswords API are timed out after 5 seconds
+to reduce potential latency problems.
+Optionally, you can add the following snippet to `config/initializers/devise.rb`
+to control the timeout settings:
+
+```ruby
+config.pwned_password_open_timeout = 1
+config.pwned_password_read_timeout = 2
+```
+
+
+### How to warn existing users when they sign in
+
+You can optionally warn existing users when they sign in if they are using a password from the PwnedPasswords dataset.
+
+To enable this, you _must_ override `after_sign_in_path_for`, like this:
+```ruby
+def after_sign_in_path_for(resource)
+  set_flash_message! :alert, :warn_pwned if resource.respond_to?(:pwned?) && resource.pwned?
+  super
+end
+```
+
+This should generally be added in ```app/controllers/application_controller.rb``` for a rails app. For an Active Admin application the following monkey patch is needed.
+
+```ruby
+# config/initializers/active_admin_devise_sessions_controller.rb
+class ActiveAdmin::Devise::SessionsController
+  def after_sign_in_path_for(resource)
+      set_flash_message! :alert, :warn_pwned if resource.respond_to?(:pwned?) && resource.pwned?
+      super
+  end
+end
+```
+
+To prevent the default call to the HaveIBeenPwned API on user sign-in (only
+really useful if you're going to check `pwned?` after sign-in as used above),
+add the following to `config/initializers/devise.rb`:
+
+```ruby
+config.pwned_password_check_on_sign_in = false
+```
+
+#### Customize warning message
+
+The default message is:
 ```
 Your password has previously appeared in a data breach and should never be used. We strongly recommend you change your password.
 ```
@@ -51,22 +108,15 @@ en:
       warn_pwned: "Your password has previously appeared in a data breach and should never be used. We strongly recommend you change your password everywhere you have used it."
 ```
 
-By default passwords are rejected if they appear at all in the data set.
-Optionally, you can add the following snippet to `config/initializers/devise.rb`
-if you want the error message to be displayed only when the password is present
-a certain number of times in the data set:
+#### Customize the warning threshold
 
-```ruby
-# Minimum number of times a pwned password must exist in the data set in order
-# to be reject.
-config.min_password_matches = 10
-```
+By default the same value, `config.min_password_matches` is used as the threshold for rejecting a passwords for _new_ user sign-ups and for warning existing users.
 
-By default the value set above is used to reject passwords and warn users.
-Optionally, you can add the following snippet to `config/initializers/devise.rb`
-if you want to use different thresholds for rejecting the password and warning
+If you want to use different thresholds for rejecting the password and warning
 the user (for example you may only want to reject passwords that are common but
-warn if the password occurs at all in the list):
+warn if the password occurs at all in the list), you can set a different value for each.
+
+To change the threshold used for the warning _only_, add to `config/initializers/devise.rb`
 
 ```ruby
 # Minimum number of times a pwned password must exist in the data set in order
@@ -74,15 +124,11 @@ warn if the password occurs at all in the list):
 config.min_password_matches_warn = 1
 ```
 
-By default responses from the PwnedPasswords API are timed out after 5 seconds
-to reduce potential latency problems.
-Optionally, you can add the following snippet to `config/initializers/devise.rb`
-to control the timeout settings:
-
-```ruby
-config.pwned_password_open_timeout = 1
-config.pwned_password_read_timeout = 2
-```
+Note: If you do have a different warning threshold, that threshold will also be used
+when a user changes their password (added as an _error_!) so that they don't
+continue to be warned if they choose another password that is in the pwned list
+but occurs with a frequency below the main threshold that is used for *new*
+user registrations (`config.min_password_matches`).
 
 ### Disabling in test environments
 
@@ -105,32 +151,6 @@ gem 'devise-pwned_password'
 And then execute:
 ```bash
 $ bundle install
-```
-
-Optionally, if you also want to warn existing users when they sign in, override `after_sign_in_path_for`
-```ruby
-def after_sign_in_path_for(resource)
-  set_flash_message! :alert, :warn_pwned if resource.respond_to?(:pwned?) && resource.pwned?
-  super
-end
-```
-
-This should generally be added in ```app/controllers/application_controller.rb``` for a rails app. For an Active Admin application the following monkey patch is needed.
-
-```ruby
-# config/initializers/active_admin_devise_sessions_controller.rb
-class ActiveAdmin::Devise::SessionsController
-  def after_sign_in_path_for(resource)
-      set_flash_message! :alert, :warn_pwned if resource.respond_to?(:pwned?) && resource.pwned?
-      super
-  end
-end
-```
-
-To prevent the default call to the HaveIBeenPwned API on user sign in, add the following to `config/initializers/devise.rb`:
-
-```ruby
-config.pwned_password_check_on_sign_in = false
 ```
 
 ## Considerations
