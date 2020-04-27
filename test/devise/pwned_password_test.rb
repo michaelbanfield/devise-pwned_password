@@ -3,6 +3,8 @@
 require "test_helper"
 
 class Devise::PwnedPassword::Test < ActiveSupport::TestCase
+  include ::Devise::PwnedPassword::TestHelpers::InstanceMethods
+
   def setup
     User.min_password_matches = 1
     User.min_password_matches_warn = nil
@@ -29,6 +31,20 @@ class Devise::PwnedPassword::Test < ActiveSupport::TestCase
       Devise.pwned_password_check_enabled = false
       assert user.valid?
       assert_equal 0, user.pwned_count
+    end
+
+    test "when using with_pwned_password_check, is considered valid" do
+      user = pwned_password_user
+      Devise.pwned_password_check_enabled = false
+      assert user.valid?
+      with_pwned_password_check do
+        assert_not user.valid?
+        assert user.pwned_count > 0
+        without_pwned_password_check do
+          assert user.valid?
+          assert_equal 0, user.pwned_count
+        end
+      end
     end
   end
 

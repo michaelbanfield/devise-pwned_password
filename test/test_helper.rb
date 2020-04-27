@@ -8,6 +8,8 @@ require "rails/test_help"
 
 require 'minitest/mock'
 
+require 'devise/pwned_password/test_helpers'
+
 # Filter out Minitest backtrace while allowing backtrace from other libraries
 # to be shown.
 Minitest.backtrace_filter = Minitest::BacktraceFilter.new
