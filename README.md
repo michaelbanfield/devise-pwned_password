@@ -13,7 +13,7 @@ Add the :pwned_password module to your existing Devise model.
 
 ```ruby
 class AdminUser < ApplicationRecord
-  devise :database_authenticatable, 
+  devise :database_authenticatable,
          :recoverable, :rememberable, :trackable, :validatable, :pwned_password
 end
 ```
@@ -86,14 +86,38 @@ config.pwned_password_read_timeout = 2
 
 ### Disabling in test environments
 
-Currently this module cannot be mocked out for test environments. Because an API call is made this can slow down tests, or make test fixtures needlessly complex (dynamically generated passwords). The module can be disabled in test environments like this.
+Because calling a remote API can slow down tests, and requiring non-pwned passwords can make test fixtures needlessly complex (dynamically generated passwords), you probably want to disable the `pwned_password` check in your tests. You can disable the `pwned_password` check for the test environments by adding this to your `config/initializers/devise.rb` file:
 
 ```ruby
-class User < ApplicationRecord
-  devise :invitable ...  :validatable, :lockable
-  devise :pwned_password unless Rails.env.test?
-end
+config.pwned_password_check_enabled = !Rails.env.test?
 ```
+
+If there are any tests that required the check to be enabled (such as tests for specifically testing the flow/behavior for what should happen when a user does try to use, or already have, a pwned password), you can temporarily set `Devise.pwned_password_check_enabled = true` for the duration of the test (just be sure to reset it back at the end).
+
+To make it easier to turn this check on or off, a `with_pwned_password_check` (and complimentary `without_pwned_password_check`) method is provided:
+
+```ruby
+  it "doesn't let you change your password to a compromised password" do
+    fill_in 'user_password', with: 'Password'
+    with_pwned_password_check do
+      click_button 'Save changes'
+    end
+  end
+```
+
+To use these helpers, add to your `test/test_helper.rb` or `spec/spec_helper.rb`:
+
+```ruby
+require 'devise/pwned_password/test_helpers'
+```
+
+If using RSpec, that's all you need to do: It will automaticaly include the helper methods and reset `pwned_password_check_enabled` to false before every example.
+
+If using Minitest, you also need to add:
+```ruby
+  include ::Devise::PwnedPassword::TestHelpers::InstanceMethods
+```
+
 
 ## Installation
 Add this line to your application's Gemfile:

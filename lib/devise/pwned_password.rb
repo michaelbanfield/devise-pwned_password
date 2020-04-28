@@ -4,8 +4,10 @@ require "devise"
 require "devise/pwned_password/model"
 
 module Devise
-  mattr_accessor :min_password_matches, :min_password_matches_warn, :pwned_password_check_on_sign_in,
+  mattr_accessor :pwned_password_check_enabled,
+                 :min_password_matches, :min_password_matches_warn, :pwned_password_check_on_sign_in,
                  :pwned_password_open_timeout, :pwned_password_read_timeout
+  @@pwned_password_check_enabled = true
   @@min_password_matches = 1
   @@min_password_matches_warn = nil
   @@pwned_password_check_on_sign_in = true
