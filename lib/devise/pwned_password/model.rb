@@ -59,6 +59,7 @@ module Devise
           )
           return @pwned
         rescue Pwned::Error
+          # This deliberately silently swallows errors and returns false (valid) if there was an error. Most apps won't want to tie the ability to sign up users to the availability of a third-party API.
           return false
         end
 
@@ -68,7 +69,6 @@ module Devise
       private
 
         def not_pwned_password
-          # This deliberately fails silently on 500's etc. Most apps won't want to tie the ability to sign up users to the availability of a third-party API.
           if password_pwned?(password)
             errors.add(:password, :pwned_password, count: @pwned_count)
           end
