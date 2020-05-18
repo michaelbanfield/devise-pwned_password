@@ -1,14 +1,23 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Dummy</title>
-    <%= csrf_meta_tags %>
+<head>
+  <title>Dummy</title>
+  <%= csrf_meta_tags %>
 
-    <%= stylesheet_link_tag    'application', media: 'all' %>
-    <%= javascript_include_tag 'application' %>
-  </head>
+  <%= stylesheet_link_tag    'application', media: 'all' %>
+  <%= javascript_include_tag 'application' %>
+</head>
 
-  <body>
-    <%= yield %>
-  </body>
+<body>
+  <% if current_user %>
+    <%= link_to "Sign out", destroy_user_session_path %>
+  <% else %>
+    <%= link_to "Sign in", new_user_session_path %>
+  <% end %>
+
+  <p class="notice"><%= notice %></p>
+  <p class="alert"><%= alert %></p>
+
+  <%= yield %>
+</body>
 </html>
