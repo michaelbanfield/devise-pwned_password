@@ -15,8 +15,8 @@ module Devise
 
       included do
         validate :not_pwned_password,
-          if: Devise.activerecord51? ? :will_save_change_to_encrypted_password? : :encrypted_password_changed?
-      end
+        if: Devise.activerecord51? ? :will_save_change_to_encrypted_password? : :encrypted_password_changed?
+        end
 
       module ClassMethods
         Devise::Models.config(self, :min_password_matches)
@@ -45,6 +45,8 @@ module Devise
           open_timeout: self.class.pwned_password_open_timeout
         }
         pwned_password = Pwned::Password.new(password.to_s, options)
+        puts "pwned result"
+        puts pwned_password.pwned_count
         begin
           @pwned_count = pwned_password.pwned_count
           @pwned = @pwned_count >= (
@@ -58,6 +60,8 @@ module Devise
                                                       self.class.min_password_matches
             end
           )
+          puts "pwned is "
+          puts @pwned
           return @pwned
         rescue Pwned::Error
           # This deliberately silently swallows errors and returns false (valid) if there was an error. Most apps won't want to tie the ability to sign up users to the availability of a third-party API.
