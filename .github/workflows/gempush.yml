@@ -15,7 +15,7 @@ jobs:
     - name: Set up Ruby 2.6
       uses: ruby/setup-ruby@v1
       with:
-        version: 2.6.10
+        ruby-version: 2.6.10
 
     - name: Publish to GPR
       run: |
