@@ -16,6 +16,6 @@ jobs:
     - name: Build and test with Rake
       run: |
         sudo apt-get install libsqlite3-dev
-        gem install bundler
+        gem install bundler -v 2.4.22
         bundle install --jobs 4 --retry 3
         bin/test
