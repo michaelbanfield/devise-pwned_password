@@ -32,3 +32,18 @@ class ActiveSupport::TestCase
 end
 
 Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each { |f| require f }
+
+# Stub network calls to the Pwned Passwords service so tests
+# don't rely on external connectivity. Any password equal to
+# 'password' will be treated as pwned with a high count while
+# others will be considered safe.
+module Pwned
+  class Password
+    def pwned_count
+      @pwned_count ||= (password == 'password' ? 1_000_000 : 0)
+    end
+    def pwned?
+      pwned_count > 0
+    end
+  end
+end
