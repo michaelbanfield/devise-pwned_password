@@ -18,12 +18,15 @@ Gem::Specification.new do |s|
 
   s.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.md"]
 
-  s.add_dependency "devise", "~> 4"
+  s.add_dependency "devise", ">= 4", "< 6"
   s.add_dependency "pwned", "~> 2.4"
 
   s.add_development_dependency "byebug"
   s.add_development_dependency "capybara"
-  s.add_development_dependency "rails", "~> 5.1.2"
+  s.add_development_dependency "minitest", "< 6.0"
+  s.add_development_dependency "minitest-mock"
+  s.add_development_dependency "ostruct"
+  s.add_development_dependency "rails", "~> 7.1"
   s.add_development_dependency "rubocop", "~> 0.52.1"
   s.add_development_dependency "sqlite3"
 end
