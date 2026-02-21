@@ -15,4 +15,4 @@ gemspec
 # To use a debugger
 # gem 'byebug', group: [:development, :test]
 
-gem "devise", "~> 4"
+gem "devise", ENV.fetch("DEVISE_VERSION", "~> 5")
