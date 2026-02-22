@@ -201,5 +201,20 @@ docker run --rm devise-pwned-test
 docker run --rm -e DEVISE_VERSION="~> 4.0" devise-pwned-test
 ```
 
+### Releasing
+
+To release a new version:
+
+```bash
+# 1. Update version in lib/devise/pwned_password/version.rb
+# 2. Commit the change
+git add -A && git commit -m "Bump version to 0.2.1"
+# 3. Create and push a tag
+git tag v0.2.1
+git push origin master --tags
+```
+
+The gem will be automatically published to RubyGems and GitHub Package Registry when the tag is pushed.
+
 ## License
 The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
