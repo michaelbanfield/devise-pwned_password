@@ -63,8 +63,6 @@ module Devise
           # This deliberately silently swallows errors and returns false (valid) if there was an error. Most apps won't want to tie the ability to sign up users to the availability of a third-party API.
           return false
         end
-
-        false
       end
 
       private
