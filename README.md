@@ -183,8 +183,23 @@ To contribute:
 * Check the [issue tracker](https://github.com/michaelbanfield/devise-pwned_password/issues) and [pull requests](https://github.com/michaelbanfield/devise-pwned_password/pulls) for anything similar
 * Fork the repository
 * Make your changes
-* Run `bin/test` to make sure the unit tests still run
+* Run tests to make sure they still pass (see below)
 * Send a pull request
+
+### Running Tests
+
+You can run tests locally with `bin/test`, or use Docker to match the CI environment:
+
+```bash
+# Build the test image
+docker build -t devise-pwned-test .
+
+# Run tests with Devise 5 (default)
+docker run --rm devise-pwned-test
+
+# Run tests with Devise 4
+docker run --rm -e DEVISE_VERSION="~> 4.0" devise-pwned-test
+```
 
 ## License
 The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).

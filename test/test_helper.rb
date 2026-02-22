@@ -28,6 +28,7 @@ class ActiveSupport::TestCase
     super
     User.min_password_matches = 1
     User.min_password_matches_warn = nil
+    User.pwned_password_check_on_sign_in = true
   end
 end
 

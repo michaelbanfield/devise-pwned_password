@@ -21,6 +21,30 @@ class Devise::PwnedPassword::Test < ActiveSupport::TestCase
     end
   end
 
+  class WhenPwnedError < Devise::PwnedPassword::Test
+    test "password_pwned? returns false when Pwned::Error is raised" do
+      user = valid_password_user
+      mock_password = Minitest::Mock.new
+      mock_password.expect(:pwned_count, nil) { raise Pwned::Error, "network error" }
+      Pwned::Password.stub :new, mock_password do
+        assert_equal false, user.password_pwned?(valid_password)
+      end
+    end
+  end
+
+  class PwnedAccessor < Devise::PwnedPassword::Test
+    test "pwned? is false before password_pwned? called" do
+      user = User.new
+      assert_equal false, user.pwned?
+    end
+
+    test "pwned? reflects result after password_pwned? called" do
+      user = valid_password_user
+      user.password_pwned?(pwned_password)
+      assert user.pwned?
+    end
+  end
+
   class WhenNotPwned < Devise::PwnedPassword::Test
     test "should accept validation and set pwned_count" do
       user = valid_password_user

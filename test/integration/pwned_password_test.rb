@@ -33,6 +33,15 @@ class SignInTest < ActionDispatch::IntegrationTest
     assert_css '.notice', text: 'Signed in successfully.'
     assert_css '.alert', text: 'We strongly recommend you change your password.'
   end
+
+  test 'signing in with check_on_sign_in disabled shows no warning' do
+    User.pwned_password_check_on_sign_in = false
+    user = pwned_password_user
+    sign_in_user user, password: pwned_password
+
+    assert_css '.notice', text: 'Signed in successfully.'
+    assert_no_text 'We strongly recommend you change your password.'
+  end
 end
 
 class ChangePasswordTest < ActionDispatch::IntegrationTest
